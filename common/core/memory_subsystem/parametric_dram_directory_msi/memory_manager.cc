@@ -15,6 +15,13 @@
 
 #include <algorithm>
 
+//added by swain
+#include "stdlib.h"
+#include "trace.h"
+#include "appxnoc.h"
+using namespace trace;
+using namespace appxnoc;
+
 #if 0
    extern Lock iolock;
 #  include "core_manager.h"
@@ -532,8 +539,11 @@ MYLOG("begin");
       delete [] shmem_msg->getDataBuf();
    }
    delete shmem_msg;
-MYLOG("end");
+   MYLOG("end");
 }
+
+//added by swain
+Lock rand_lock;
 
 void
 MemoryManager::sendMsg(PrL1PrL2DramDirectoryMSI::ShmemMsg::msg_t msg_type, MemComponent::component_t sender_mem_component, MemComponent::component_t receiver_mem_component, core_id_t requester, core_id_t receiver, IntPtr address, Byte* data_buf, UInt32 data_length, HitWhere::where_t where, ShmemPerf *perf, ShmemPerfModel::Thread_t thread_num)
@@ -555,7 +565,26 @@ MYLOG("send msg %u %ul%u > %ul%u", msg_type, requester, sender_mem_component, re
    NetPacket packet(msg_time, SHARED_MEM_1,
          m_core_id_master, receiver,
          shmem_msg.getMsgLen(), (const void*) msg_buf);
+   //added by swain
+   //do approximation before sending a packet
+   if (trace_manager::get_singleton()->is_packet_roi(packet.sender, packet.receiver)) {
+      // rand_lock.acquire();
+      // if (packet.length != 56 && rand() % 2)
+      //    packet.length = (rand() % 3 + 2) * 64 - 8;
+      // rand_lock.release();
+      if (packet.length != 56)
+         packet = getCore()->get_local_cntlr()->compress(packet);
+   }
    getNetwork()->netSend(packet);
+
+   //added by swain
+   //record network traffic
+#ifdef _FLOW_TRACE_
+   if (trace_manager::get_singleton()->is_roi()) {
+      bool is_roi = trace_manager::get_singleton()->is_packet_roi(packet.sender, packet.receiver);
+      trace_manager::get_singleton()->add_record(flow_record(packet.sender, packet.receiver, packet.length, atol(itostr(packet.time).c_str()), is_roi));
+   }
+#endif
 
    // Delete the Msg Buf
    delete [] msg_buf;

@@ -1,6 +1,8 @@
 #ifndef _TRACE_H_
 #define _TRACE_H_
 
+#include "lock.h"
+
 #include <stdio.h>
 #include <pthread.h>
 
@@ -38,7 +40,7 @@ namespace trace {
     vector<bool> thread_roi;
 
     static const long VECTOR_SIZE = 50000000L;
-    pthread_mutex_t lock;
+    Lock lock;
 
 #ifdef _FLOW_TRACE_
     vector<flow_record> flows;
@@ -58,7 +60,6 @@ namespace trace {
 
     trace_manager(int ncores) : roi_count(0)
     {
-      pthread_mutex_init(&lock, NULL);
       thread_roi.resize(ncores, false);
 #ifdef _FLOW_TRACE_
       flows.resize(VECTOR_SIZE);
@@ -78,7 +79,7 @@ namespace trace {
     }
     inline bool is_roi() { return roi_count > 0; }
 
-    static trace_manager * getSingleton() { return singleton; }
+    static trace_manager * get_singleton() { return singleton; }
 
     static void init(int ncores) {
       if (!singleton)

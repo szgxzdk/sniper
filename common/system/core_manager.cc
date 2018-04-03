@@ -15,6 +15,13 @@
 
 #include "log.h"
 
+//added by swain
+#include "appxnoc.h"
+#include "simulator.h"
+#include "config.hpp"
+
+using namespace appxnoc;
+
 CoreManager::CoreManager()
       : m_core_tls(TLS::create())
       , m_thread_type_tls(TLS::create())
@@ -23,9 +30,23 @@ CoreManager::CoreManager()
 {
    LOG_PRINT("Starting CoreManager Constructor.");
 
+   //added by swain
+   int appx_level = Simulator::getSingleton()->getCfg()->getInt("appxnoc/appx_level");
    for (UInt32 i = 0; i < Config::getSingleton()->getTotalCores(); i++)
    {
-      m_cores.push_back(new Core(i));
+
+     Core * core = new Core(i);
+     //master node
+     if (i == 0)
+       global_cntlr::init(core, Simulator::getSingleton()->getCfg()->getInt("perf_model/l2_cache/cache_block_size"));
+     //constant appx-level
+     if (appx_level > 0)
+       core->get_local_cntlr()->set_appx_level(appx_level);
+     else {
+       //enabling appx scheduling
+     }
+
+     m_cores.push_back(core);
    }
 
    LOG_PRINT("Finished CoreManager Constructor.");

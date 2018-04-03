@@ -11,10 +11,6 @@
 #include "performance_model.h"
 #include "instruction.h"
 
-//added by swain
-#include "trace.h"
-using namespace trace;
-
 // FIXME: Rework netCreateBuf and netExPacket. We don't need to
 // duplicate the sender/receiver info the packet. This should be known
 // by the transport layer and given to us. We also should be more
@@ -85,13 +81,7 @@ void Network::netPullFromTransport()
       NetPacket packet(_transport->recv());
 
       LOG_PRINT("Pull packet : type %i, from %i, time %s", (SInt32)packet.type, packet.sender, itostr(packet.time).c_str());
-      //added by swain
-#ifdef _FLOW_TRACE_
-      if (trace_manager::getSingleton()->is_roi()) {
-         bool is_roi = trace_manager::getSingleton()->is_packet_roi(packet.sender, packet.receiver);
-         trace_manager::getSingleton()->add_record(flow_record(packet.sender, packet.receiver, packet.length, atol(itostr(packet.time).c_str()), is_roi));
-      }
-#endif
+
       //--------------
       assert(0 <= packet.sender && packet.sender < _numMod);
       LOG_ASSERT_ERROR(0 <= packet.type && packet.type < NUM_PACKET_TYPES, "Packet type: %d not between 0 and %d", packet.type, NUM_PACKET_TYPES);

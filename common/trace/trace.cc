@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <pthread.h>
 
+#include "lock.h"
+
 #include "trace.h"
 using namespace trace;
 
@@ -9,21 +11,21 @@ trace_manager * trace_manager::singleton;
 
 void trace_manager::add_record(const flow_record & r) {
 #ifdef _FLOW_TRACE_
-  pthread_mutex_lock(&lock);
+  lock.acquire();
   if (flow_count == flows.size())
     save_flow();
   flows[flow_count++] = r;
-  pthread_mutex_unlock(&lock);
+  lock.release();
 #endif
 }
 
 void trace_manager::add_record(const inst_record & r) {
 #ifdef _INST_TRACE_
-  pthread_mutex_lock(&lock);
+  lock.acquire();
   if (inst_count == insts.size())
     save_inst();
   insts[inst_count++] = r;
-  pthread_mutex_unlock(&lock);
+  lock.release();
 #endif
 }
 

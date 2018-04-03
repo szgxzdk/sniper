@@ -19,7 +19,10 @@
 
 //added by swain
 #include "trace.h"
+#include "appxnoc.h"
 #include "stdlib.h"
+using namespace trace;
+using namespace appxnoc;
 
 #if 0
    extern Lock iolock;
@@ -104,6 +107,9 @@ Core::Core(SInt32 id)
          this, m_network, m_shmem_perf_model);
 
    m_performance_model = PerformanceModel::create(this);
+
+   //addedd by swain
+   lc_cntlr =  new local_cntlr(this);
 }
 
 Core::~Core()

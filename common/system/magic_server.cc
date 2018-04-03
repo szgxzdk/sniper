@@ -46,8 +46,8 @@ UInt64 MagicServer::Magic_unlocked(thread_id_t thread_id, core_id_t core_id, UIn
          }
       case SIM_CMD_ROI_START:
          //added by swain
-         trace_manager::getSingleton()->roi_inc();
-         trace_manager::getSingleton()->set_thread_roi(core_id, true);
+         trace_manager::get_singleton()->roi_inc();
+         trace_manager::get_singleton()->set_thread_roi(core_id, true);
 
          Sim()->getHooksManager()->callHooks(HookType::HOOK_APPLICATION_ROI_BEGIN, 0);
          if (Sim()->getConfig()->getSimulationROI() == Config::ROI_MAGIC)
@@ -60,8 +60,8 @@ UInt64 MagicServer::Magic_unlocked(thread_id_t thread_id, core_id_t core_id, UIn
          }
       case SIM_CMD_ROI_END:
          //added by swain
-         trace_manager::getSingleton()->roi_dec();
-         trace_manager::getSingleton()->set_thread_roi(core_id, false);
+         trace_manager::get_singleton()->roi_dec();
+         trace_manager::get_singleton()->set_thread_roi(core_id, false);
 
          Sim()->getHooksManager()->callHooks(HookType::HOOK_APPLICATION_ROI_END, 0);
          if (Sim()->getConfig()->getSimulationROI() == Config::ROI_MAGIC)

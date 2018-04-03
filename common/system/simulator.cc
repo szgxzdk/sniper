@@ -62,7 +62,7 @@ void Simulator::release()
    m_singleton = NULL;
 
    //added by swain
-   trace_manager::getSingleton()->save();
+   trace_manager::get_singleton()->save();
    trace_manager::release();
 }
 
@@ -157,7 +157,7 @@ void Simulator::start()
       Sim()->getMagicServer()->setPerformance(true);
 
       //added by swain
-      trace_manager::getSingleton()->roi_inc();
+      trace_manager::get_singleton()->roi_inc();
    }
 
    m_running = true;

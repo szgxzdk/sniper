@@ -29,6 +29,12 @@ struct MemoryResult {
 MemoryResult makeMemoryResult(HitWhere::where_t _hit_where, SubsecondTime _latency);
 void applicationMemCopy(void *dest, const void *src, size_t n);
 
+//added by swain
+namespace appxnoc {
+   class local_cntlr;
+}
+using namespace appxnoc;
+
 class Core
 {
    public:
@@ -114,6 +120,10 @@ class Core
       const TopologyInfo* getTopologyInfo() const { return m_topology_info; }
       const CheetahManager* getCheetahManager() const { return m_cheetah_manager; }
 
+   //added by swain
+   local_cntlr * get_local_cntlr() { return lc_cntlr; }
+   const local_cntlr * get_local_cntlr() const { return lc_cntlr; }
+
       State getState() const { return m_core_state; }
       void setState(State core_state) { m_core_state = core_state; }
       UInt64 getInstructionCount() { return m_instructions; }
@@ -146,6 +156,9 @@ class Core
       BbvCount m_bbv;
       TopologyInfo *m_topology_info;
       CheetahManager *m_cheetah_manager;
+
+   //added by swain
+   local_cntlr * lc_cntlr;
 
       State m_core_state;
 
